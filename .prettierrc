@@ -1,0 +1,7 @@
+{
+  "printWidth": 100,
+  "htmlWhitespaceSensitivity": "ignore",
+  "singleAttributePerLine": false,
+  "vueIndentScriptAndStyle": true,
+  "bracketSameLine": true
+}
