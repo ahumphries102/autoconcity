@@ -1,25 +1,24 @@
 <template>
-  <div style="width: 75%; height: 500px; background: green;">
-    <div :style="{width: '50px', height: '50px', 'background-color': cardColor}"></div>
+  <div style="width: 75%; height: 500px; background: green; position: relative; padding: 2%">
+    {{ playerInfo }}
+    <div :style="{ width: '50px', height: '50px', 'background-color': cardColor, position: 'absolute', transform: playerInfo.playerId > 1 ? 'translate(0)':'translateY(300px)' }"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-    import { useCounterStore } from "@/stores/counter";
-import { computed } from "vue";
-    const counterStore = useCounterStore()
-    console.log(counterStore.userInfo)
+  import { PlayerInfo } from "@/stores/userInfo";
+  import { computed } from "vue";
 
-    const cardColor = computed(() => {
-      if (counterStore.userInfo.playerId === 'player 1') {
-        return 'pink'
-      }
-      if (counterStore.userInfo.playerId === 'player 2') {
-        return 'red'
-      }
-    })
+  const playerInfo = PlayerInfo().playerInfo
+  const cardColor = computed(() => {
+    if (playerInfo.playerId === 1) {
+      return "pink";
+    }
+    if (playerInfo.playerId === 2) {
+      return "aqua";
+    }
+    return "blue"
+  });
 </script>
 
-<style>
-
-</style>
+<style></style>

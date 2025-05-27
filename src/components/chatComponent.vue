@@ -21,13 +21,11 @@
 
 <script setup lang="ts">
   import { watch, ref, onUnmounted, onMounted } from "vue";
-  import { useRoute } from "vue-router";
   import { io } from "socket.io-client";
   import type { UserInfo } from '../types/socket'
-  import { useCounterStore } from "@/stores/counter";
+  import { PlayerInfo } from "@/stores/userInfo";
   
-  const counterStore = useCounterStore()
-
+  let playerInfo = PlayerInfo().playerInfo
   const props = defineProps<{
     userName: string;
     roomName: string;
@@ -36,34 +34,25 @@
     withCredentials: true,
     transports: ["websocket"],
   });
-  const route = useRoute();
+
   const hasJoined = ref(false);
   const clientChatLog = ref<string[]>([]);
   const newMessage = ref("");
   const listOfUsers = ref<UserInfo[]>([]);
 
-  let userInfo: UserInfo = {
-    roomId: route.params.id as string,
-    roomName: props.roomName,
-    id: socket.id as string,
-    userName: props.userName,
-    playerId: ''
-  };
-
   onMounted(() => {
     // step 1, join the room and submit a users info
-    socket.emit("join-room", userInfo);
+    socket.emit("join-room", playerInfo);
     window.addEventListener("beforeunload", browserClosed);
   });
 
   // step 2, once a user has joined
-
   socket.on("current-users", (users) => {
     listOfUsers.value = users;
   });
 
   socket.on("update-user", updatedUserInfo => {
-    counterStore.userInfo = updatedUserInfo
+    playerInfo.playerId = updatedUserInfo.playerId
   })
 
   socket.on("update-users", (allUsers, updatedMessages) => {
@@ -72,7 +61,7 @@
   });
 
   onUnmounted(() => {
-    socket.emit("left-room", userInfo.userName);
+    socket.emit("left-room", playerInfo.userName);
     socket.disconnect();
     socket.off();
     window.removeEventListener("beforeunload", browserClosed);

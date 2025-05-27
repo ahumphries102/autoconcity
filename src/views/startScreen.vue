@@ -10,8 +10,15 @@
     </v-card>
 </template>
 
-<script>
-  export default {};
+<script setup lang="ts">
+  import { PlayerInfo } from "@/stores/userInfo"
+
+  const playerInfo = PlayerInfo().playerInfo
+
+  if(playerInfo.userName && playerInfo.roomName) {
+    playerInfo.userName = ""
+    playerInfo.roomName = ""
+  }
 </script>
 
 <style></style>
