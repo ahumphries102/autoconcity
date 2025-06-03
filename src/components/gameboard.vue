@@ -1,6 +1,13 @@
 <template>
   <div style="width: 75%; height: 500px; background: green; position: relative; padding: 2%">
-    <div v-for="(users, ind) in listOfUsers" :key="ind" :class="['taco']" :style="cardPosition">{{ users.userName }}</div>
+    <h2>{{ listOfUsers }}</h2>
+    <div
+      v-for="(users, ind) in listOfUsers"
+      :key="ind"
+      :class="['taco']"
+      :style="cardPosition(users.playerId)">
+      {{ users.userName }}
+    </div>
   </div>
 </template>
 
@@ -11,25 +18,20 @@
 
   const playerInfos = PlayerInfo();
   const { listOfUsers, playerInfo } = storeToRefs(playerInfos);
-  const cardColor = computed(() => {
-    return "crab";
-  });
-  const cardPosition = computed(() => {
-    console.log(playerInfo.value.userName)
-    const otherPlayer = listOfUsers.value.find((e) => e.playerId !== playerInfo.value.playerId);
-
-    if (otherPlayer) {
+  const cardPosition = (otherPlayer: number) => {
+    if (playerInfo.value.playerId < otherPlayer) {
       return {
-        'background-color': 'pink',
-        bottom: "0",
-      };
-    } else {
-      return {
-        'background-color': 'yellow',
+        "background-color": "pink",
         top: "0",
       };
+    } else {
+      console.log("taco");
+      return {
+        "background-color": "yellow",
+        bottom: "0",
+      };
     }
-  });
+  };
 </script>
 
 <style>
