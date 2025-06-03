@@ -1,6 +1,6 @@
 import { getIOInstance } from "../io";
 import  { type UserInfo, type Socket, UserRole } from "../../types/socket.d";
-let listOfUsers: string[] = [];
+let listOfUsers: UserInfo[] = [];
 let serverChatLog: string[] = [];
 
 const createUser = (socket: Socket, userInfo: UserInfo): UserInfo => {
@@ -9,12 +9,11 @@ const createUser = (socket: Socket, userInfo: UserInfo): UserInfo => {
 };
 
 const createListOfUsers = (socket: Socket) => {
-  listOfUsers.push(socket.userInfo!.userName);
+  listOfUsers.push(socket.userInfo!);
 
   if (socket.userInfo) {
     if (listOfUsers.length === 1) {
       socket.userInfo.playerId = UserRole.PlayerOne;
-      console.log(socket.userInfo.playerId)
     }
     if (listOfUsers.length === 2) {
       socket.userInfo.playerId = UserRole.PlayerTwo;
@@ -40,7 +39,7 @@ const leaveChat = (io: any, socket: Socket) => {
   // leave the room
   socket.on("left-room", () => {
     if (socket.userInfo) {
-      listOfUsers = listOfUsers.filter((e) => e !== socket.userInfo!.userName);
+      listOfUsers = listOfUsers.filter((e) => e.userName !== socket.userInfo?.userName);
       serverChatLog.push(`${socket.userInfo?.userName} has left the room`);
       io.to(socket.userInfo.roomName).emit("user-disconnected", {
         listOfUsers,
@@ -55,6 +54,7 @@ export default () => {
   io.on("connection", (socket) => {
     // Join the room
     socket.on("join-room", (userInfo) => {
+      socket.join(userInfo.roomName)
       // step 1, save user to a socket
       createUser(socket, userInfo);
       // step 2, join room and add user to list of users

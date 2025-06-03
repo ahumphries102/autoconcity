@@ -9,5 +9,7 @@ export const PlayerInfo = defineStore("userInfo", () => {
     playerId: null,
   });
 
-  return { playerInfo }
+  let listOfUsers = ref([])
+  
+  return { listOfUsers, playerInfo }
 });
