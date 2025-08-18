@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import Board from '@/components/gameboard.vue'
+import Board from '@/components/gameboard/gameboard.vue'
 import { onMounted } from 'vue';
 import { io } from "socket.io-client";
 

@@ -13,7 +13,7 @@
       <v-list-item :title="'Hello ' + props.userName" :subtitle="props.roomName"></v-list-item>
       <v-divider></v-divider>
       <ul>
-        <li v-for="(userNames, index) in listOfUsers" :key="index">{{ userNames }}</li>
+        <li v-for="(userInfo, index) in listOfUsers" :key="index">{{ userInfo.userName }}</li>
       </ul>
     </v-list>
   </div>
@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
   import { watch, ref, onUnmounted, onMounted } from "vue";
-  import { useRoute } from "vue-router";
   import { io } from "socket.io-client";
-  import type { UserInfo } from '../types/socket'
-  import { useCounterStore } from "@/stores/counter";
-  
-  const counterStore = useCounterStore()
+  import { PlayerInfo } from "@/stores/userInfo";
+  import { storeToRefs } from 'pinia'
+
+  const playerStore = PlayerInfo()
+  const { playerInfo, listOfUsers } = storeToRefs(playerStore)
 
   const props = defineProps<{
     userName: string;
@@ -36,50 +36,39 @@
     withCredentials: true,
     transports: ["websocket"],
   });
-  const route = useRoute();
+
   const hasJoined = ref(false);
   const clientChatLog = ref<string[]>([]);
   const newMessage = ref("");
-  const listOfUsers = ref<UserInfo[]>([]);
 
-  let userInfo: UserInfo = {
-    roomId: route.params.id as string,
-    roomName: props.roomName,
-    id: socket.id as string,
-    userName: props.userName,
-    playerId: ''
-  };
 
   onMounted(() => {
     // step 1, join the room and submit a users info
-    socket.emit("join-room", userInfo);
+    socket.emit("join-room", playerInfo.value);
     window.addEventListener("beforeunload", browserClosed);
   });
 
   // step 2, once a user has joined
-
   socket.on("current-users", (users) => {
     listOfUsers.value = users;
   });
 
-  socket.on("update-user", updatedUserInfo => {
-    counterStore.userInfo = updatedUserInfo
-  })
-
-  socket.on("update-users", (allUsers, updatedMessages) => {
+  socket.on("update-user", (allUsers, updatedMessages, updatedUserInfo) => {
     listOfUsers.value = allUsers;
     clientChatLog.value = updatedMessages
-  });
+  })
 
   onUnmounted(() => {
-    socket.emit("left-room", userInfo.userName);
+    socket.emit("left-room", playerInfo.value.userName);
     socket.disconnect();
     socket.off();
     window.removeEventListener("beforeunload", browserClosed);
   });
 
   socket.on("user-disconnected", (updatedRoomInfo) => {
-    listOfUsers.value = updatedRoomInfo.listOfUsers;
+    if(playerInfo.value) {
+      listOfUsers.value = updatedRoomInfo.listOfUsers.value;
+    }
     clientChatLog.value = updatedRoomInfo.serverChatLog
   });
 
@@ -95,7 +84,7 @@
     socket.disconnect();
     socket.off();
   };
-  watch(listOfUsers, (newVal, oldVal) => {
+  watch(listOfUsers.value, (newVal, oldVal) => {
     if (newVal.length > oldVal.length) {
       return (hasJoined.value = true);
     } else {

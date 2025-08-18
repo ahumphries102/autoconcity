@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import ChatRoomContent from "@/components/chatComponent.vue";
+import ChatRoomContent from "@/components/chatroom/chatComponent.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -12,12 +12,12 @@ const router = createRouter({
       path: "/lobby",
       name: "lobby",
       props: true,
-      component: () => import("@/views/lobby.vue"),
+      component: () => import("@/views/lobbyView.vue"),
     },
     {
       path: "/playfield",
       name: "playfield",
-      component: () => import("@/views/playfield.vue"), // layout
+      component: () => import("@/views/playfieldView.vue"), // layout
       children: [
         {
           path: ":userName/:roomName",
