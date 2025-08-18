@@ -11,6 +11,7 @@ export interface UserInfo {
   playerId: UserRole | null;
   roomName: string;
   socketId?: string;
+  spectator?: boolean;
   userName: string;
 }
 

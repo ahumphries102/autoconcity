@@ -53,14 +53,10 @@
     listOfUsers.value = users;
   });
 
-  socket.on("update-user", updatedUserInfo => {
-    playerInfo.value.playerId = updatedUserInfo.playerId
-  })
-
-  socket.on("update-users", (allUsers, updatedMessages) => {
+  socket.on("update-user", (allUsers, updatedMessages, updatedUserInfo) => {
     listOfUsers.value = allUsers;
     clientChatLog.value = updatedMessages
-  });
+  })
 
   onUnmounted(() => {
     socket.emit("left-room", playerInfo.value.userName);

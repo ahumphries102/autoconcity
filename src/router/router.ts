@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import ChatRoomContent from "@/components/chatComponent.vue";
+import ChatRoomContent from "@/components/chatroom/chatComponent.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

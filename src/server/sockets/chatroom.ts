@@ -8,22 +8,20 @@ const createUser = (socket: Socket, userInfo: UserInfo): UserInfo => {
   return socket.userInfo;
 };
 
-const createListOfUsers = (socket: Socket) => {
-  listOfUsers.push(socket.userInfo!);
-
+const createListOfUsers = (socket: Socket): void => {
   if (socket.userInfo) {
-    if (listOfUsers.length === 1) {
+    if (listOfUsers.length === 0) {
       socket.userInfo.playerId = UserRole.PlayerOne;
     }
-    if (listOfUsers.length === 2) {
+    if (listOfUsers.length === 1) {
       socket.userInfo.playerId = UserRole.PlayerTwo;
     }
     if (listOfUsers.length > 2) {
-      socket.userInfo.playerId = UserRole.Spectator;
+      socket.userInfo.spectator = true;
     }
   }
+  listOfUsers.push(socket.userInfo!);
   socket.emit("update-user", socket.userInfo)
-  return listOfUsers;
 };
 
 const activateChat = (io: any, socket: Socket) => {
